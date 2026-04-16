@@ -20,20 +20,23 @@ Run locally:
 streamlit run app.py
 
 ✨ Feature Highlights
-Capability	Description	Status
-Road Segmentation	Pixel-wise drivable area detection	✅
-Hybrid Model	CNN + Transformer architecture	✅
-Uncertainty Estimation	Monte Carlo Dropout	✅
-Real-world Dataset	IDD dataset	✅
-Visualization	Segmentation + heatmaps	✅
-Robust Pipeline	Handles complex environments	✅
+| Capability             | Description                        | Status |
+| ---------------------- | ---------------------------------- | ------ |
+| Road Segmentation      | Pixel-wise drivable area detection | ✅    |
+| Hybrid Model           | CNN + Transformer architecture     | ✅    |
+| Uncertainty Estimation | Monte Carlo Dropout                | ✅    |
+| Real-world Dataset     | IDD dataset                        | ✅    |
+| Visualization          | Segmentation + heatmaps            | ✅    |
+| Robust Pipeline        | Handles complex environments       | ✅    |
+
+
 🎯 Problem Statement
 
 Autonomous vehicles operating in Indian traffic face:
 
-Unstructured roads
-Mixed traffic (cars, bikes, pedestrians)
-Poor lane discipline
+->Unstructured roads
+->Mixed traffic (cars, bikes, pedestrians)
+->Poor lane discipline
 
 Traditional models provide deterministic outputs without confidence, leading to unsafe decisions.
 
@@ -41,24 +44,28 @@ Traditional models provide deterministic outputs without confidence, leading to 
 
 A risk-aware segmentation system that predicts:
 
-Road regions
-Prediction uncertainty
+->Road regions
+->Prediction uncertainty
+
 🧠 Key Features
+
 🔹 Uncertainty-Aware AI
 Monte Carlo Dropout
 Variance-based uncertainty maps
 Detection of risky regions
+
 🔹 Hybrid Deep Learning Model
 CNN (ResNet/EfficientNet)
 Transformer for global context
 UNet-style decoder
-🔹 Real-World Robustness
 
+🔹 Real-World Robustness
 Handles:
 
 Occlusions
 Lighting variations
 Complex traffic
+
 🏗️ Architecture Overview
 Input Image
      │
@@ -94,14 +101,20 @@ Predictions
 Mean + Variance
    ↓
 Final Output + Uncertainty
+
 🚀 Tech Stack
-Layer	Technology	Purpose
-Framework	PyTorch	Deep Learning
-Language	Python	Core Implementation
-Vision	OpenCV	Image Processing
-Visualization	Matplotlib	Graphs
-Augmentation	Albumentations	Data Augmentation
+
+| Layer         | Technology     | Purpose             |
+| ------------- | -------------- | ------------------- |
+| Framework     | PyTorch        | Deep Learning       |
+| Language      | Python         | Core Implementation |
+| Vision        | OpenCV         | Image Processing    |
+| Visualization | Matplotlib     | Graphs              |
+| Augmentation  | Albumentations | Data Augmentation   |
+
+
 📦 Installation
+
 Prerequisites
 Python 3.10+
 GPU (optional)
@@ -113,21 +126,28 @@ python -m venv venv
 venv\Scripts\activate
 
 pip install -r requirements.txt
+
 ▶️ Training
 python training/train.py
+
 🔍 Inference
 python inference/predict.py
+
 🎮 Usage
 Train model using dataset
 Run inference
 Visualize outputs
+
 📊 Results
-Metric	Value
-IoU	~75%
-Dice Score	~0.80
-Accuracy	~88%
-Precision	~85%
-Recall	~83%
+
+| Metric     | Value |
+| ---------- | ----- |
+| IoU        | ~75%  |
+| Dice Score | ~0.80 |
+| Accuracy   | ~88%  |
+| Precision  | ~85%  |
+| Recall     | ~83%  |
+
 🔑 Why This Model is Unique
 
 Unlike traditional segmentation models:
@@ -148,20 +168,25 @@ road-segmentation-uncertainty/
 ├── app.py
 ├── requirements.txt
 └── README.md
+
 📊 Visualization Outputs
+
 Segmentation maps
 Uncertainty heatmaps
 Training curves
+
 🧠 Future Roadmap
  Real-time optimization
  Multi-class segmentation
  Video-based modeling
  Edge deployment
+
 🤝 Contributing
 Fork repository
 Create branch
 Commit changes
 Open pull request
+
 🐛 Troubleshooting
 Model not training
 Check dataset path
@@ -169,24 +194,21 @@ Verify dependencies
 Low accuracy
 Increase epochs
 Tune hyperparameters
+
 📊 Performance
 Training Time: ~2–4 hrs (GPU)
 Inference Time: ~0.1s/image
-📄 License
 
+📄 License
 MIT License
 
 🙏 Acknowledgments
 IDD Dataset contributors
 PyTorch community
 OpenCV
-💬 Support
 
+💬 Support
 Open an issue on GitHub or contact via email.
 
 🚀 Final Note
-
 This model doesn’t just detect roads — it knows when it might be wrong.
-
-
-👉 **“:contentReference[oaicite:3]{index=3}”** 🚀
