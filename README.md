@@ -159,16 +159,60 @@ Enables safe decision-making
 👉 Combines accuracy + reliability
 
 🧪 Project Structure
-road-segmentation-uncertainty/
+uncertainty_road_segmentation/
+│
 ├── data/
+│   ├── raw/
+│   │   ├── images/                  # Original dataset images
+│   │   └── masks/                   # Ground truth masks
+│   │
+│   ├── processed/                   # (optional future preprocessing)
+│   │   ├── train/
+│   │   └── val/
+│   │
+│   └── splits/                      # train.txt, val.txt (optional)
+│
 ├── models/
-├── training/
-├── inference/
+│   ├── encoder.py                   # ResNet backbone
+│   ├── transformer.py               # Self-attention module
+│   ├── decoder.py                   # Upsampling layers
+│   └── model.py                     # Full hybrid model
+│
 ├── utils/
-├── app.py
-├── requirements.txt
-└── README.md
-
+│   ├── dataset.py                   # Data loader
+│   ├── augmentations.py             # Data augmentation
+│   ├── losses.py                    # Loss functions
+│   ├── metrics.py                   # IoU, Dice
+│   └── visualization.py             # Plot helpers
+│
+├── training/
+│   ├── train.py                     # Training pipeline
+│   └── validate.py                  # Validation logic
+│
+├── inference/
+│   ├── predict.py                   # MC Dropout (uncertainty)
+│   ├── visualize_results.py         # Static visualization
+│   ├── webcam_demo.py               # 🎥 Real-time detection
+│   └── gradcam.py                   # 🧠 Explainability
+│
+├── notebooks/
+│   └── eda.ipynb                    # Exploratory Data Analysis
+│
+├── outputs/
+│   ├── models/
+│   │   └── model.pth                # Trained model
+│   │
+│   ├── results/                     # Saved predictions
+│   └── logs/                        # Training logs
+│
+├── configs/
+│   └── config.yaml                  # Hyperparameters (optional)
+│
+├── streamlit_app.py                 # 🚀 MAIN UI (MOST IMPORTANT)
+│
+├── main.py                          # Entry point
+├── requirements.txt                 # Dependencies
+└── README.md                        # Documentation
 📊 Visualization Outputs
 
 Segmentation maps
