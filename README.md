@@ -25,6 +25,31 @@ This project delivers a **hybrid CNN–Transformer segmentation model** that not
 
 ---
 
+## Architecture
+
+### Backend (Python + FastAPI)
+- **Framework**: FastAPI with Uvicorn
+- **Endpoint**: `POST /predict` — accepts multipart image + MC samples, returns JSON with segmentation mask, uncertainty heatmap, overlay, and metrics
+- **Endpoint**: `GET /health` — health check
+- Model: `RoadSegmentationModel` with ResNet/EfficientNet encoder, Spatial Transformer, UNet decoder, MC Dropout
+- Uncertainty: T stochastic forward passes → mean + variance
+
+### Frontend (TypeScript + React + Vite)
+- **Framework**: React 18 with TypeScript
+- **Build**: Vite with HMR
+- **API integration**: Axios calls to FastAPI backend
+- Features: drag-and-drop upload, MC sample slider, live metric cards, uncertainty heatmap overlay, error/loading states
+
+### Model (PyTorch)
+- **Encoder**: ResNet-50 / EfficientNet-B4 with multi-scale features
+- **Transformer**: Spatial self-attention on deepest feature map
+- **Decoder**: UNet-style with skip connections
+- **Uncertainty**: Monte Carlo Dropout — keep dropout active during inference, run T passes, compute mean & variance
+- **Loss**: BCE+Dice loss with focal and Tversky variants
+- **Metrics**: IoU, Dice, Accuracy, Precision, Recall
+
+---
+
 ## Key Features
 
 | Capability | Description | Status |
