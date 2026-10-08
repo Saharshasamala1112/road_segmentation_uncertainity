@@ -2,9 +2,14 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 from pathlib import Path
 from typing import Optional
+
+try:
+    import seaborn as sns
+    sns.set_style("whitegrid")
+except ImportError:
+    pass
 
 
 def plot_training_curves(

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uncertainty-Aware Road Segmentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #a0a0c0;
+            font-size: 1.1rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .panel h2 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            color: #e0e0ff;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: #7b2ff7;
+            background: rgba(123, 47, 247, 0.1);
+        }
+
+        .upload-area.dragover {
+            border-color: #00d2ff;
+            background: rgba(0, 210, 255, 0.1);
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        .upload-area .icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            color: #a0a0c0;
+        }
+
+        .preview-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 16px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a0a0c0;
+            font-size: 0.9rem;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            accent-color: #7b2ff7;
+        }
+
+        .control-group .value {
+            float: right;
+            color: #00d2ff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #7b2ff7, #00d2ff);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(123, 47, 247, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .result-card img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .result-card .label {
+            font-size: 0.85rem;
+            color: #a0a0c0;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .metric-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .metric-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00d2ff;
+        }
+
+        .metric-card .label {
+            font-size: 0.8rem;
+            color: #a0a0c0;
+            margin-top: 4px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #7b2ff7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Uncertainty-Aware Road Segmentation</h1>
+            <p>Upload a road image to segment drivable regions with confidence estimation</p>
+        </header>
+
+        <div class="main-grid">
+            <div class="panel">
+                <h2>Input</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="icon">&#128247;</div>
+                    <p>Drag & drop an image here or click to browse</p>
+                    <input type="file" id="fileInput" accept="image/*">
+                </div>
+                <img id="preview" class="preview-image" alt="Preview">
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>MC Dropout Samples <span class="value" id="mcValue">30</span></label>
+                        <input type="range" id="mcSamples" min="1" max="100" value="30">
+                    </div>
+                    <button class="btn btn-primary" id="predictBtn" disabled>Run Inference</button>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Running inference...</p>
+                </div>
+
+                <div class="error" id="error"></div>
+            </div>
+
+            <div class="panel">
+                <h2>Results</h2>
+                <div class="results-grid" id="results">
+                    <div class="result-card">
+                        <img id="segResult" src="" alt="Segmentation">
+                        <div class="label">Segmentation Mask</div>
+                    </div>
+                    <div class="result-card">
+                        <img id="uncResult" src="" alt="Uncertainty">
+                        <div class="label">Uncertainty Heatmap</div>
+                    </div>
+                </div>
+
+                <div class="metrics" id="metrics">
+                    <div class="metric-card">
+                        <div class="value" id="meanConf">-</div>
+                        <div class="label">Mean Confidence</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="value" id="maxUnc">-</div>
+                        <div class="label">Max Uncertainty</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="value" id="meanUnc">-</div>
+                        <div class="label">Mean Uncertainty</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="value" id="roadCov">-</div>
+                        <div class="label">Road Coverage</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const predictBtn = document.getElementById('predictBtn');
+        const mcSamples = document.getElementById('mcSamples');
+        const mcValue = document.getElementById('mcValue');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+
+        let selectedFile = null;
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length) handleFile(files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) handleFile(e.target.files[0]);
+        });
+
+        mcSamples.addEventListener('input', () => {
+            mcValue.textContent = mcSamples.value;
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showError('Please upload an image file');
+                return;
+            }
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                predictBtn.disabled = false;
+                hideError();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        predictBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            loading.classList.add('active');
+            predictBtn.disabled = true;
+            hideError();
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('mc_samples', mcSamples.value);
+
+            try {
+                const response = await fetch(`${API_URL}/predict`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                document.getElementById('segResult').src = `data:image/png;base64,${data.segmentation}`;
+                document.getElementById('uncResult').src = `data:image/png;base64,${data.uncertainty}`;
+
+                document.getElementById('meanConf').textContent = data.metrics.mean_confidence.toFixed(4);
+                document.getElementById('maxUnc').textContent = data.metrics.max_uncertainty.toFixed(4);
+                document.getElementById('meanUnc').textContent = data.metrics.mean_uncertainty.toFixed(4);
+                document.getElementById('roadCov').textContent = data.metrics.road_coverage.toFixed(1) + '%';
+
+            } catch (err) {
+                showError('Inference failed: ' + err.message);
+            } finally {
+                loading.classList.remove('active');
+                predictBtn.disabled = false;
+            }
+        });
+
+        function showError(msg) {
+            error.textContent = msg;
+            error.classList.add('active');
+        }
+
+        function hideError() {
+            error.classList.remove('active');
+        }
+    </script>
+</body>
+</html>
