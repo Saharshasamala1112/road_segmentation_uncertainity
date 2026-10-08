@@ -1,0 +1,46 @@
+# Model Configuration
+model:
+  encoder: resnet50          # resnet50 | efficientnet_b4
+  pretrained: true
+  transformer_heads: 8
+  transformer_dim: 512
+  transformer_layers: 4
+  dropout_rate: 0.5          # MC Dropout rate
+  num_classes: 1             # Binary segmentation
+
+# Training Configuration
+training:
+  epochs: 50
+  batch_size: 8
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  num_workers: 4
+  device: cuda               # cuda | cpu
+  seed: 42
+  early_stopping_patience: 10
+  checkpoint_dir: outputs/models/
+  log_dir: outputs/logs/
+
+# Data Configuration
+data:
+  train_images: data/raw/images/train/
+  train_masks: data/raw/masks/train/
+  val_images: data/raw/images/val/
+  val_masks: data/raw/masks/val/
+  image_size: [512, 512]     # [height, width]
+  num_classes: 1
+
+# Augmentation Configuration
+augmentation:
+  horizontal_flip: 0.5
+  vertical_flip: 0.1
+  random_rotate: 0.3
+  color_jitter: 0.2
+  gaussian_noise: 0.1
+  blur: 0.1
+
+# Inference Configuration
+inference:
+  mc_samples: 30             # Number of MC Dropout passes
+  confidence_threshold: 0.5
+  uncertainty_threshold: 0.1
